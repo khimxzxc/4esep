@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Электронная книга</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color, #ffffff);
+            color: var(--text-color, #000000);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+        }
+        #navbar button {
+            background: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #navbar button:hover {
+            background: #ec971f;
+        }
+        #content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #pagination {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+        #pagination button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #pagination button:hover {
+            background-color: #0056b3;
+        }
+        #pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #footer {
+            text-align: center;
+            padding: 10px;
+            background: #f1f1f1;
+            border-top: 1px solid #ddd;
+        }
+        #footer a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div>Электронная книга</div>
+        <button id="toggleTheme">Переключить тему</button>
+    </div>
+    <div id="content">
+        <div id="bookContent">Загрузка...</div>
+    </div>
+    <div id="pagination">
+        <button id="prevPage" disabled>Назад</button>
+        <button id="nextPage">Вперед</button>
+    </div>
+    <div id="footer">
+        <p>
+            Есть вопросы или пожелания? 
+            <a href="mailto:creator@example.com?subject=Обратная%20связь%20по%20книге&body=Здравствуйте,%20я%20хотел%20бы%20обсудить%20..." id="feedbackLink">
+                Связаться с автором
+            </a>
+        </p>
+    </div>
+
+    <script>
+        const bookContent = document.getElementById('bookContent');
+        const prevPageButton = document.getElementById('prevPage');
+        const nextPageButton = document.getElementById('nextPage');
+        const toggleThemeButton = document.getElementById('toggleTheme');
+
+        let bookPages = []; // Здесь будут страницы из JSON
+        let currentPage = parseInt(localStorage.getItem('currentPage')) || 0;
+
+        // Загрузка книги из JSON
+        fetch('book.json')
+            .then(response => response.json())
+            .then(data => {
+                bookPages = data.pages;
+                renderPage();
+            })
+            .catch(error => {
+                bookContent.textContent = "Ошибка загрузки книги.";
+                console.error('Ошибка загрузки:', error);
+            });
+
+        // Отображение текущей страницы
+        function renderPage() {
+            if (bookPages.length === 0) return;
+            bookContent.textContent = bookPages[currentPage];
+            localStorage.setItem('currentPage', currentPage);
+
+            // Управление состоянием кнопок
+            prevPageButton.disabled = currentPage === 0;
+            nextPageButton.disabled = currentPage === bookPages.length - 1;
+        }
+
+        // Переход на следующую страницу
+        nextPageButton.addEventListener('click', () => {
+            if (currentPage < bookPages.length - 1) {
+                currentPage++;
+                renderPage();
+            }
+        });
+
+        // Переход на предыдущую страницу
+        prevPageButton.addEventListener('click', () => {
+            if (currentPage > 0) {
+                currentPage--;
+                renderPage();
+            }
+        });
+
+        // Переключение темы
+        toggleThemeButton.addEventListener('click', () => {
+            const currentTheme = document.body.style.getPropertyValue('--bg-color');
+            if (currentTheme === 'black') {
+                document.body.style.setProperty('--bg-color', '#ffffff');
+                document.body.style.setProperty('--text-color', '#000000');
+            } else {
+                document.body.style.setProperty('--bg-color', 'black');
+                document.body.style.setProperty('--text-color', 'white');
+            }
+        });
+
+        // Сохранение прогресса
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('currentPage', currentPage);
+        });
+    </script>
+</body>
+</html>
