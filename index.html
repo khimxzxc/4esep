@@ -1,168 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Электронная книга</title>
+    <title>Введение в программирование</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color, #ffffff);
-            color: var(--text-color, #000000);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        #navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-        }
-        #navbar button {
-            background: #f0ad4e;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #navbar button:hover {
-            background: #ec971f;
-        }
-        #content {
-            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            overflow-y: auto;
+            line-height: 1.6;
+            background-color: #f4f4f4;
         }
-        #pagination {
+        .book-container {
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .navigation {
             display: flex;
             justify-content: space-between;
-            padding: 10px 20px;
+            margin-top: 20px;
+        }
+        .search-container, .contact-container, .ad-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+        .ad-container {
             background-color: #f9f9f9;
-            border-top: 1px solid #ddd;
-        }
-        #pagination button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #pagination button:hover {
-            background-color: #0056b3;
-        }
-        #pagination button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        #footer {
             text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        input {
             padding: 10px;
-            background: #f1f1f1;
-            border-top: 1px solid #ddd;
+            width: 70%;
+            margin-right: 10px;
         }
-        #footer a {
-            color: #007BFF;
-            text-decoration: none;
-            font-weight: bold;
+        #searchResults {
+            margin-top: 10px;
+            color: #666;
         }
-        #footer a:hover {
-            text-decoration: underline;
-        }
+
+      
     </style>
 </head>
 <body>
-    <div id="navbar">
-        <div>Электронная книга</div>
-        <button id="toggleTheme">Переключить тему</button>
-    </div>
-    <div id="content">
-        <div id="bookContent">Загрузка...</div>
-    </div>
-    <div id="pagination">
-        <button id="prevPage" disabled>Назад</button>
-        <button id="nextPage">Вперед</button>
-    </div>
-    <div id="footer">
-        <p>
-            Есть вопросы или пожелания? 
-            <a href="mailto:creator@example.com?subject=Обратная%20связь%20по%20книге&body=Здравствуйте,%20я%20хотел%20бы%20обсудить%20..." id="feedbackLink">
-                Связаться с автором
-            </a>
-        </p>
+    <div class="book-container">
+        <div class="ad-container">
+            <h3>🚀 Хотите изучить программирование быстрее?</h3>
+            <p>Запишитесь на наш онлайн-курс со скидкой 50%!</p>
+            <button onclick="showAdDetails()">Подробнее</button>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Поиск по книге">
+            <button onclick="searchContent()">Найти</button>
+            <div id="searchResults"></div>
+        </div>
+
+        <div id="bookContent">
+            <h1 id="chapterTitle">Введение в программирование</h1>
+            <p id="chapterContent">
+                Программирование - это искусство создания инструкций для компьютеров, 
+                позволяющих им выполнять определенные задачи. Это творческий процесс 
+                решения проблем с помощью логики и алгоритмов.
+            </p>
+        </div>
+
+        <div class="navigation">
+            <button onclick="changePage(-1)">Предыдущая глава</button>
+            <button onclick="changePage(1)">Следующая глава</button>
+        </div>
+
+        <div class="contact-container">
+            <h3>📧 Связь с автором</h3>
+            <p>У вас есть вопросы или предложения?</p>
+            <button onclick="contactAuthor()">Написать автору</button>
+        </div>
     </div>
 
     <script>
-        const bookContent = document.getElementById('bookContent');
-        const prevPageButton = document.getElementById('prevPage');
-        const nextPageButton = document.getElementById('nextPage');
-        const toggleThemeButton = document.getElementById('toggleTheme');
+        const chapters = [
+            {
+                title: "Введение в программирование",
+                content: "Программирование - это искусство создания инструкций для компьютеров, позволяющих им выполнять определенные задачи. Это творческий процесс решения проблем с помощью логики и алгоритмов."
+            },
+            {
+                title: "Основные понятия",
+                content: "В программировании существуют ключевые концепции: переменные, которые хранят данные, функции, выполняющие определенные действия, и алгоритмы - последовательности шагов для решения задач."
+            },
+            {
+                title: "Языки программирования",
+                content: "Существует множество языков программирования: Python для анализа данных, JavaScript для веб-разработки, Java для корпоративных приложений, C++ для системного программирования."
+            },
+            {
+                title: "Процесс разработки",
+                content: "Разработка программного обеспечения включает несколько этапов: анализ требований, проектирование, написание кода, тестирование и поддержка."
+            }
+        ];
 
-        let bookPages = []; // Здесь будут страницы из JSON
-        let currentPage = parseInt(localStorage.getItem('currentPage')) || 0;
+        let currentPageIndex = 0;
 
-        // Загрузка книги из JSON
-        fetch('book.json')
-            .then(response => response.json())
-            .then(data => {
-                bookPages = data.pages;
-                renderPage();
-            })
-            .catch(error => {
-                bookContent.textContent = "Ошибка загрузки книги.";
-                console.error('Ошибка загрузки:', error);
-            });
-
-        // Отображение текущей страницы
-        function renderPage() {
-            if (bookPages.length === 0) return;
-            bookContent.textContent = bookPages[currentPage];
-            localStorage.setItem('currentPage', currentPage);
-
-            // Управление состоянием кнопок
-            prevPageButton.disabled = currentPage === 0;
-            nextPageButton.disabled = currentPage === bookPages.length - 1;
+        function updateChapter() {
+            const chapter = chapters[currentPageIndex];
+            document.getElementById('chapterTitle').textContent = chapter.title;
+            document.getElementById('chapterContent').textContent = chapter.content;
+            
+            localStorage.setItem('lastReadPage', currentPageIndex.toString());
         }
 
-        // Переход на следующую страницу
-        nextPageButton.addEventListener('click', () => {
-            if (currentPage < bookPages.length - 1) {
-                currentPage++;
-                renderPage();
-            }
-        });
+        function changePage(direction) {
+            currentPageIndex += direction;
+            
+            if (currentPageIndex < 0) currentPageIndex = 0;
+            if (currentPageIndex >= chapters.length) currentPageIndex = chapters.length - 1;
+            
+            updateChapter();
+        }
 
-        // Переход на предыдущую страницу
-        prevPageButton.addEventListener('click', () => {
-            if (currentPage > 0) {
-                currentPage--;
-                renderPage();
-            }
-        });
+        function searchContent() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchResultsElement = document.getElementById('searchResults');
+            
+            const foundChapters = chapters.filter(chapter => 
+                chapter.content.toLowerCase().includes(searchInput) || 
+                chapter.title.toLowerCase().includes(searchInput)
+            );
 
-        // Переключение темы
-        toggleThemeButton.addEventListener('click', () => {
-            const currentTheme = document.body.style.getPropertyValue('--bg-color');
-            if (currentTheme === 'black') {
-                document.body.style.setProperty('--bg-color', '#ffffff');
-                document.body.style.setProperty('--text-color', '#000000');
+            if (foundChapters.length > 0) {
+                searchResultsElement.innerHTML = foundChapters.map((chapter, index) => 
+                    `<p>Найдено в главе: ${chapter.title} 
+                    <button onclick="goToChapter(${chapters.indexOf(chapter)})">Перейти</button></p>`
+                ).join('');
             } else {
-                document.body.style.setProperty('--bg-color', 'black');
-                document.body.style.setProperty('--text-color', 'white');
+                searchResultsElement.innerHTML = 'Ничего не найдено';
             }
-        });
+        }
 
-        // Сохранение прогресса
-        window.addEventListener('beforeunload', () => {
-            localStorage.setItem('currentPage', currentPage);
-        });
+        function goToChapter(index) {
+            currentPageIndex = index;
+            updateChapter();
+        }
+
+        function contactAuthor() {
+            alert('Электронная почта автора: programming_book@example.com\n\nМы будем рады получить ваши вопросы и предложения!');
+        }
+
+        function showAdDetails() {
+            alert('🎓 Специальное предложение!\n\nОнлайн-курс "Основы программирования" со скидкой 50%\n\nСтоимость: 500 000 тг. вместо 1 000 000 тг.\n\nИзучите основы за 2 месяца!\n\nПромокод: BOOK2024');
+        }
+
+        window.onload = function() {
+            const savedPage = localStorage.getItem('lastReadPage');
+            if (savedPage) {
+                currentPageIndex = parseInt(savedPage);
+            }
+            updateChapter();
+        };
     </script>
 </body>
 </html>
